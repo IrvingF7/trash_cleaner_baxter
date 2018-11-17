@@ -5,7 +5,7 @@ Use Python 2.7.10
 
 ### Clone the Repo
 ```
-git clone https://github.com/grantmeawish/trash_cleanup_robot.git
+git clone https://github.com/GrantMeAWish/trash_cleaner_baxter.git
 ```
 
 ### Virtual Environment Setup
