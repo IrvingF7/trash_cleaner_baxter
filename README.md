@@ -9,7 +9,7 @@ git clone https://github.com/GrantMeAWish/trash_cleaner_baxter.git
 ```
 
 ### Virtual Environment Setup
-Before installing dependencies, we strongly recommend that you setup a virtual environment in the folder that you clone the repo in. This makes sure that your dependencies are fully compatible with the python version we recommend (2.7).
+Before installing dependencies, we strongly recommend that you setup a virtual environment. This makes sure that your dependencies are fully compatible with the python version we recommend (2.7).
 ```
 virtualenv -p python2 trash_env
 cd trash_env
