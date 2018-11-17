@@ -1,0 +1,7 @@
+scipy
+numpy
+IPython
+matplotlib
+opencv-python
+pyyaml
+rospkg
