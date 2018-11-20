@@ -55,6 +55,10 @@
   <exec_depend>geometry_msgs</exec_depend>
   <build_depend>sensor_msgs</build_depend>
   <exec_depend>sensor_msgs</exec_depend>
+  <build_depend>baxter_core_msgs</build_depend>
+  <exec_depend>baxter_core_msgs</exec_depend>
+  <build_depend>baxter_interface</build_depend>
+  <exec_depend>baxter_interface</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
