@@ -31,7 +31,7 @@ def _scale_bbox2img(self, points, c_img):
 
 class Trash(object):
 
-	def __init__(self, model_output, label_num, c_img, d_img):
+	def __init__(self, points, label_num, c_img, d_img):
 		DEPTH_REGION = 20
 
 		self.c_img = c_img
