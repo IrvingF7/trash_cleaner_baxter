@@ -8,6 +8,7 @@ import IPython
 class KinectRGBD(object):
 
 	def __init__(self):
+		rospy.init_node('kinect_rgbd_listener')
 		CAM_INFO_TOPIC = '/camera/rgb/camera_info'
 		C_IMG_TOPIC = '/camera/rgb/image_color'
 		D_IMG_TOPIC = '/camera/depth_registered/image_raw'
