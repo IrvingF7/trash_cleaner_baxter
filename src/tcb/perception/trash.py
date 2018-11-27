@@ -44,7 +44,7 @@ class Trash(object):
 		self.points['y_max'] = points[3]
 
 		self.cg = self._find_cg()
-		self.depth = self._find_depth(DEPTH_REGION)
+		self.depth = self._find_depth(self.d_img, DEPTH_REGION)
 
 		self.label_num = label_num
 
@@ -63,7 +63,7 @@ class Trash(object):
 		cg = (cg_x, cg_y)
 		return cg
 
-	def _find_depth(self, depth_region):
+	def _find_depth(self, d_img, depth_region):
 		x = self.cg[0]
 		y = self.cg[1]
 
