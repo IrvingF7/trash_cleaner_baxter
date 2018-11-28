@@ -31,7 +31,7 @@ class TrashFrame(object):
 		wt = self._compute_world2trash(trans_kt, rot)
 
 		# self._frame_num += 1
-
+		# rot = tf.transformations.quaternion_from_euler(rot[0], rot[1], rot[2])
 		return wt
 
 	def _compute_kinect2trash(self, point):
