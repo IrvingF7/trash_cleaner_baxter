@@ -25,12 +25,12 @@ class TrashFrame(object):
 	def generate_world2trash(self, point, rot=(0.0, 0.0, 0.0)):
 		trans_kt = self._compute_kinect2trash(point)
 
-		# frame_name = 'trash_frame' + str(self._frame_num)
+		frame_name = 'trash_frame' + str(self._frame_num)
 
-		# thread.start_new_thread(self._broadcast_trashframe, (frame_name, trans_kt, rot))
+		thread.start_new_thread(self._broadcast_trashframe, (frame_name, trans_kt, rot))
 		wt = self._compute_world2trash(trans_kt, rot)
 
-		# self._frame_num += 1
+		self._frame_num += 1
 		# rot = tf.transformations.quaternion_from_euler(rot[0], rot[1], rot[2])
 		return wt
 

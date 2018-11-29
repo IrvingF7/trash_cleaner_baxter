@@ -23,12 +23,13 @@ class KinectRGBD(object):
 		self._c_img_updated = False
 		self._d_img_updated = False
 
-		while not self._cam_info_updated:
-			self._cam_info_sub = rospy.Subscriber(CAM_INFO_TOPIC, CameraInfo, self._cam_info_callback)
-		while not self._c_img_updated:
-			self._c_img_sub = rospy.Subscriber(C_IMG_TOPIC, Image, self._c_img_callback)
-		while not self._d_img_updated:
-			self._d_img_sub = rospy.Subscriber(D_IMG_TOPIC, Image, self._d_img_callback)
+		self._cam_info_sub = rospy.Subscriber(CAM_INFO_TOPIC, CameraInfo, self._cam_info_callback)
+		self._c_img_sub = rospy.Subscriber(C_IMG_TOPIC, Image, self._c_img_callback)
+		self._d_img_sub = rospy.Subscriber(D_IMG_TOPIC, Image, self._d_img_callback)
+
+		while True:
+			if self._cam_info_updated and self._c_img_updated and self._d_img_updated:
+				break
 
 	def get_cam_info(self):
 		return self.cam_info
