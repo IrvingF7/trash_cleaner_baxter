@@ -36,7 +36,7 @@ def main():
 							'left_e1': 1.9400238130755056,
 							'left_s0': -0.08000397926829805,
 							'left_s1': -0.9999781166910306}
-	pnp = PickAndPlace(limb, hover_distance, suction=True)
+	pnp = PickAndPlace(limb, hover_distance, suction=False)
 	# an orientation for gripper fingers to be overhead and parallel to the obj
 	overhead_orientation = Quaternion(x=-0.0249590815779,
 										y=0.999649402929,
@@ -49,7 +49,7 @@ def main():
 	c_img = rgbd_cam.get_c_img()
 	d_img = rgbd_cam.get_d_img()
 
-	bbox = [200, 300, 240, 320]
+	bbox = [100, 400, 140, 420]
 
 	cv2.rectangle(c_img,(bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 3)
 	cv2.imwrite('c_img.png', c_img)
@@ -81,19 +81,30 @@ def main():
 		position = Point(x=wt_trans[0], y=wt_trans[1], z=wt_trans[2]),
 		orientation = overhead_orientation))
 
-	obj_poses.append(Pose(
-		position = Point(x=0.7, y=0.15, z=-0.129),
-		orientation = overhead_orientation))
+	# obj_poses.append(Pose(
+	# 	position = Point(x=0.7, y=0.15, z=-0.129),
+	# 	orientation = overhead_orientation))
 	# move to the desired starting angles
 	pnp.move_to_start(starting_joint_angles)
 	idx = 0
 
+	pose1 = Pose(
+		position = Point(x=wt_trans[0], y=wt_trans[1], z=wt_trans[2]),
+		orientation = overhead_orientation)
+
+	pose2 = Pose(
+		position = Point(x=wt_trans[0], y=wt_trans[1] - 0.1, z=wt_trans[2]),
+		orientation = overhead_orientation)
+
 	while not rospy.is_shutdown():
-		print("\nPicking...")
-		pnp.pick(obj_poses[idx])
-		print("\nPlacing...")
-		idx = (idx+1)%len(obj_poses)
-		pnp.place(obj_poses[idx])
+		# print("\nPicking...")
+		# pnp.pick(obj_poses[idx])
+		# print("\nPlacing...")
+		# idx = (idx+1)%len(obj_poses)
+		# pnp.place(obj_poses[idx])
+		print("sweeping")
+		pnp.sweep(pose1, pose2)
+		pnp.move_to_start(starting_joint_angles)
 
 	return 0
 

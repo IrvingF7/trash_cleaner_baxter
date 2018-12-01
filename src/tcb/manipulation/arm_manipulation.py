@@ -43,7 +43,8 @@ class PickAndPlace(object):
 		self._init_state = self._rs.state().enabled
 		print("Enabling robot...")
 		self._rs.enable()
-		self._gripper.calibrate()
+		if not suction:
+			self._gripper.calibrate()
 
 	# move arm to a desired initial pose, if none supplied, 0 angle for every joint
 	def move_to_start(self, start_angles=None):
@@ -155,6 +156,13 @@ class PickAndPlace(object):
 		# servo down to release
 		joint_angles = self.ik_request(pose)
 		self._guarded_move_to_joint_position(joint_angles)
+
+	def sweep(self, pose1, pose2):
+		self._approach(pose1)
+		# servo to pose
+		self._servo_to_pose(pose1)
+		self.gripper_close()
+		self._servo_to_pose(pose2)
 
 	def pick(self, pose):
 		# open the gripper

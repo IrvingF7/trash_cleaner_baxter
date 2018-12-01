@@ -18,17 +18,18 @@ class TrashFrame(object):
 		self._br = tf.TransformBroadcaster()
 		self._listener = tf.TransformListener()
 		self._world_frame = '/base'
-		self._cam_frame = '/kinect'
+		self._cam_frame = '/camera_rgb_optical_frame'
 
 		self._frame_num = 0
 
 	def generate_world2trash(self, point, rot=(0.0, 0.0, 0.0)):
 		trans_kt = self._compute_kinect2trash(point)
+		wt = self._compute_world2trash(trans_kt, rot)
 
 		frame_name = 'trash_frame' + str(self._frame_num)
 
-		thread.start_new_thread(self._broadcast_trashframe, (frame_name, trans_kt, rot))
-		wt = self._compute_world2trash(trans_kt, rot)
+		thread.start_new_thread(self._broadcast_trashframe, (frame_name, wt))
+		
 
 		self._frame_num += 1
 		# rot = tf.transformations.quaternion_from_euler(rot[0], rot[1], rot[2])
@@ -48,8 +49,8 @@ class TrashFrame(object):
 
 		return trans_kt
 
-	def _broadcast_trashframe(self, frame_name, trans_kt, rot):
-		wt_trans, wt_rot = self._compute_world2trash(trans_kt, rot)
+	def _broadcast_trashframe(self, frame_name, wt):
+		wt_trans, wt_rot = wt
 		wt_trans = (wt_trans[0], wt_trans[1], wt_trans[2])
 		# wt_rot = tf.transformations.quaternion_from_euler(wt_rot[0], wt_rot[1], wt_rot[2])
 
