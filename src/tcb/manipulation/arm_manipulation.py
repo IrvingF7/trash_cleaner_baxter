@@ -23,8 +23,9 @@ from baxter_core_msgs.srv import (
 import baxter_interface
 
 class PickAndPlace(object):
-	def __init__(self, limb, hover_distance=0.15, verbose=True):
+	def __init__(self, limb, hover_distance=0.15, verbose=True, suction=False):
 		self._limb_name = limb # string
+		self._suction = suction
 		self._hover_distance = hover_distance # in meters
 		self._verbose = verbose # bool (print debug statements)
 		self._limb = baxter_interface.Limb(limb)
@@ -100,12 +101,32 @@ class PickAndPlace(object):
 			rospy.logerr("No Joint Angles provided for move_to_joint_positions.")
 
 	def gripper_open(self):
-		self._gripper.command_position(100)
-		rospy.sleep(1.0)
+		try:
+			self._gripper.command_position(100)
+			rospy.sleep(1.0)
+		except:
+			rospy.logerr("not a parallel jaw gripper")
 
 	def gripper_close(self):
-		self._gripper.command_position(0)
-		rospy.sleep(1.0)
+		try:
+			self._gripper.command_position(0)
+			rospy.sleep(1.0)
+		except:
+			rospy.logerr("not a parallel jaw gripper")
+
+	def suction_on(self):
+		try:
+			self._gripper.command_suction()
+			rospy.sleep(1.0)
+		except:
+			rospy.logerr("not a suction gripper")
+
+	def suction_off(self):
+		try:
+			self._gripper.set_blow_off(2.0)
+			rospy.sleep(1.0)
+		except:
+			rospy.logerr("not a suction gripper")
 
 	def _approach(self, pose):
 		approach = copy.deepcopy(pose)
@@ -137,13 +158,19 @@ class PickAndPlace(object):
 
 	def pick(self, pose):
 		# open the gripper
-		self.gripper_open()
+		if not self._suction:
+			self.gripper_open()
+		else:
+			self.suction_on()
 		# servo above pose
 		self._approach(pose)
 		# servo to pose
 		self._servo_to_pose(pose)
 		# close gripper
-		self.gripper_close()
+		if not self._suction:
+			self.gripper_close()
+		else:
+			self.suction_off()
 		# retract to clear object
 		self._retract()
 
@@ -153,6 +180,9 @@ class PickAndPlace(object):
 		# servo to pose
 		self._servo_to_pose(pose)
 		#open the gripper
-		self.gripper_open()
+		if not self._suction:
+			self.gripper_open()
+		else:
+			self.suction_off()
 		# retract to clear object
 		self._retract()
