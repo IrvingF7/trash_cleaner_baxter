@@ -47,11 +47,28 @@ class PickAndPlace(object):
 			self._gripper.calibrate()
 
 	# move arm to a desired initial pose, if none supplied, 0 angle for every joint
-	def move_to_start(self, start_angles=None):
+	def move_to_start(self):
 		print("moving the {0} arm to start pose...".format(self._limb_name))
 
-		if not start_angles:
-			start_angles = dict(zip(self._joint_names, [0]*7))
+		# if not start_angles:
+		# 	start_angles = dict(zip(self._joint_names, [0]*7))
+
+		if self._limb_name == "left":
+			start_angles = {'left_w0': 0.6699952259595108,
+							'left_w1': 1.030009435085784,
+							'left_w2': -0.4999997247485215,
+							'left_e0': -1.189968899785275,
+							'left_e1': 1.9400238130755056,
+							'left_s0': -0.08000397926829805,
+							'left_s1': -0.9999781166910306}
+		else:
+			start_angles = {'right_s0': -0.395, 
+							'right_s1': -0.202, 
+							'right_e0': 1.831, 
+							'right_e1': 1.981, 
+							'right_w0': -1.279, 
+							'right_w1': 1.700, 
+							'right_w2': -0.448}
 
 		self._guarded_move_to_joint_position(start_angles)
 		self.gripper_open()
@@ -117,7 +134,7 @@ class PickAndPlace(object):
 
 	def suction_on(self):
 		try:
-			self._gripper.command_suction()
+			self._gripper.command_suction(timeout=5.0)
 			rospy.sleep(1.0)
 		except:
 			rospy.logerr("not a suction gripper")
@@ -161,15 +178,16 @@ class PickAndPlace(object):
 		self._approach(pose1)
 		# servo to pose
 		self._servo_to_pose(pose1)
-		self.gripper_close()
+		if not self._suction:
+			self.gripper_close()
+		else:
+			self.suction_on()
 		self._servo_to_pose(pose2)
 
 	def pick(self, pose):
 		# open the gripper
 		if not self._suction:
 			self.gripper_open()
-		else:
-			self.suction_on()
 		# servo above pose
 		self._approach(pose)
 		# servo to pose
@@ -178,7 +196,7 @@ class PickAndPlace(object):
 		if not self._suction:
 			self.gripper_close()
 		else:
-			self.suction_off()
+			self.suction_on()
 		# retract to clear object
 		self._retract()
 
@@ -190,7 +208,5 @@ class PickAndPlace(object):
 		#open the gripper
 		if not self._suction:
 			self.gripper_open()
-		else:
-			self.suction_off()
 		# retract to clear object
 		self._retract()

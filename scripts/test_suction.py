@@ -27,9 +27,9 @@ def main():
 	rospy.init_node("suction_demo")
 	limb = 'right'
 	hover_distance = 0.15
+
 	pnp = PickAndPlace(limb, hover_distance, suction=True)
 	IPython.embed()
-	pnp.suction_on()
 
 if __name__ == "__main__":
 	main()
