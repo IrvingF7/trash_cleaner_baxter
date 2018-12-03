@@ -76,7 +76,8 @@ class Broom(Tool):
 		self._gripper_rot = (-np.pi, 0, -np.pi / 2)
 		
 	def sweep(self, trash_frame):
-		x, y, z = trash_frame[0], trash_frame[1], trash_frame[2]
+		trash_trans = trash_frame[0]
+		x, y, z = trash_trans[0], trash_trans[1], trash_trans[2]
 		start_y = y + 0.15
 		end_y = y - 0.15
 
@@ -105,8 +106,10 @@ class DustPan(Tool):
 		self._gripper_rot = (-np.pi, 0, -np.pi / 2)
 
 	def place_pan(self, trash_frame):
-		x, y, z = trash_frame[0], trash_frame[1], trash_frame[2]
+		trash_trans = trash_frame[0]
+		x, y, z = trash_trans[0], trash_trans[1], trash_trans[2]
 		set_y = y - 0.15
+		set_z = z + 0.2
 
 		set_pose = Pose(position=Point(x=x, y=set_y, z=z), 
 						orientation=self._gripper_rot)

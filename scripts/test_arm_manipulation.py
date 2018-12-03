@@ -21,6 +21,7 @@ from tcb.perception.trash_frame import TrashFrame
 from tcb.perception.trash import Trash
 
 from tcb.manipulation.arm_manipulation import BaxterArm
+from tcb.manipulation.tools import Tool, Broom, Dustpan, Sticky
 import time
 
 def draw_rectangle_and_save(c_img, d_img, bbox):
@@ -31,16 +32,12 @@ def draw_rectangle_and_save(c_img, d_img, bbox):
 def main():
 	# note IK operates w.r.t. /base frame
 	rospy.init_node("ik_pick_and_place_demo")
-	limb = 'left'
-	hover_distance = 0.15 # meters
 
-	arm = BaxterArm(limb, hover_distance, suction=False)
-	# an orientation for gripper fingers to be overhead and parallel to the obj
-	overhead_orientation = Quaternion(x=-0.0249590815779,
-										y=0.999649402929,
-										z=0.00737916180073,
-										w=0.00486450832011)
-	arm.move_to_start()
+	left_arm = BaxterArm('left')
+	left_arm.move_to_start()
+
+	right_arm = BaxterArm('right')
+	right_arm.move_to_start()
 
 	rgbd_cam = KinectRGBD()
 	cam_info = rgbd_cam.get_cam_info()
@@ -50,7 +47,6 @@ def main():
 	bbox = [220, 320, 260, 350]
 
 	draw_rectangle_and_save(c_img, d_img, bbox)
-	IPython.embed()
 
 	trash = Trash(bbox, 0, c_img, d_img)
 	cg = trash.get_cg()
@@ -60,51 +56,16 @@ def main():
 	trash_frame = TrashFrame(rgbd_cam)
 	wt = trash_frame.generate_world2trash(trash_point)
 
-	# br = tf.TransformBroadcaster()
-	# br.sendTransform(wt[0], wt[1], rospy.Time.now(), '/trash_frame0', '/base')
+	broom = Broom()
+	dustpan = DustPan()
+
+	broom.pick()
+	dustpan.pick()
+
+	dustpan.place_plan()
+	broom.sweep(wt)
 	
-	wt_trans = wt[0]
-	# print(wt_trans)
-
-	obj_poses = list()
-	# pose of objects in its initial location (world coord)
-	# replace these poses with estimates from a perception node
-	
-	# add additional desired poses for the object
-	# each additional pose will get its own pick and place
-	# obj_poses.append(Pose(
-	# 	position = Point(x=0.75, y=0.0, z=-0.129),
-	# 	orientation = overhead_orientation))
-	obj_poses.append(Pose(
-		position = Point(x=wt_trans[0], y=wt_trans[1], z=wt_trans[2]),
-		orientation = overhead_orientation))
-
-	# obj_poses.append(Pose(
-	# 	position = Point(x=0.7, y=0.15, z=-0.129),
-	# 	orientation = overhead_orientation))
-	# move to the desired starting angles
-	arm.move_to_start()
-	idx = 0
-
-	pose1 = Pose(
-		position = Point(x=wt_trans[0], y=wt_trans[1], z=wt_trans[2] + 0.01),
-		orientation = overhead_orientation)
-
-	pose2 = Pose(
-		position = Point(x=wt_trans[0], y=wt_trans[1] - 0.1, z=wt_trans[2] + 0.01),
-		orientation = overhead_orientation)
-
-	while not rospy.is_shutdown():
-		# print("\nPicking...")
-		# arm.pick(obj_poses[idx])
-		# print("\nPlacing...")
-		# idx = (idx+1)%len(obj_poses)
-		# arm.place(obj_poses[idx])
-		print("sweeping")
-		arm.pick(pose1)
-		arm.move_to_start()
-
-	return 0
+	broom.return_to_start()
 
 if __name__ == '__main__':
 	sys.exit(main())

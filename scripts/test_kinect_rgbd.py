@@ -3,6 +3,8 @@ import rospy
 import cv2
 from tcb.perception.kinect_rgbd import KinectRGBD
 
+rospy.init_node('kinect_rgbd_listener')
+
 def test():
 	rgbd_cam = KinectRGBD()
 	cam_info = rgbd_cam.get_cam_info()
