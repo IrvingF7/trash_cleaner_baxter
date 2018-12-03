@@ -20,7 +20,7 @@ from tcb.perception.kinect_rgbd import KinectRGBD
 from tcb.perception.trash_frame import TrashFrame
 from tcb.perception.trash import Trash
 
-from tcb.manipulation.arm_manipulation import PickAndPlace
+from tcb.manipulation.arm_manipulation import BaxterArm
 import time
 import numpy as np
 
@@ -65,8 +65,8 @@ def main():
 	broom_pose = Pose(position=Point(x=broom_trans[0], y=broom_trans[1], z=broom_trans[2]),
 					orientation=broom_quat)
 
-	pnp_left = PickAndPlace('left', suction=False)
-	# pnp_right = PickAndPlace('right', hover_distance, suction=True)
+	arm_left = BaxterArm('left', suction=False)
+	# arm_right = BaxterArm('right', hover_distance, suction=True)
 
 	IPython.embed()
 

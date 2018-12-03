@@ -22,10 +22,10 @@ from baxter_core_msgs.srv import (
 
 import baxter_interface
 
-class PickAndPlace(object):
+class BaxterArm(object):
 	def __init__(self, limb, hover_distance=0.15, verbose=True, suction=False):
 		self._limb_name = limb # string
-		self._suction = suction
+		self.is_suction = suction
 		self._hover_distance = hover_distance # in meters
 		self._verbose = verbose # bool (print debug statements)
 		self._limb = baxter_interface.Limb(limb)
@@ -132,9 +132,9 @@ class PickAndPlace(object):
 		except:
 			rospy.logerr("not a parallel jaw gripper")
 
-	def suction_on(self):
+	def suction_on(self, suction_time=5.0):
 		try:
-			self._gripper.command_suction(timeout=5.0)
+			self._gripper.command_suction(timeout=suction_time)
 			rospy.sleep(1.0)
 		except:
 			rospy.logerr("not a suction gripper")
@@ -146,7 +146,7 @@ class PickAndPlace(object):
 		except:
 			rospy.logerr("not a suction gripper")
 
-	def _approach(self, pose):
+	def approach(self, pose):
 		approach = copy.deepcopy(pose)
 		# approach with a pose hover-distance above the requested pose
 		approach.position.z = approach.position.z + self._hover_distance
@@ -154,7 +154,7 @@ class PickAndPlace(object):
 
 		self._guarded_move_to_joint_position(joint_angles)
 
-	def _retract(self):
+	def retract(self):
 		# retrieve current pose from endpoint
 		current_pose = self._limb.endpoint_pose()
 		ik_pose = Pose()
@@ -169,44 +169,44 @@ class PickAndPlace(object):
 		# servo up from current pose
 		self._guarded_move_to_joint_position(joint_angles)
 
-	def _servo_to_pose(self, pose):
+	def gripper_to_pose(self, pose):
 		# servo down to release
 		joint_angles = self.ik_request(pose)
 		self._guarded_move_to_joint_position(joint_angles)
 
 	def sweep(self, pose1, pose2):
-		self._approach(pose1)
+		self.approach(pose1)
 		# servo to pose
-		self._servo_to_pose(pose1)
-		if not self._suction:
+		self.gripper_to_pose(pose1)
+		if not self.is_suction:
 			self.gripper_close()
 		else:
 			self.suction_on()
-		self._servo_to_pose(pose2)
+		self.gripper_to_pose(pose2)
 
 	def pick(self, pose):
 		# open the gripper
-		if not self._suction:
+		if not self.is_suction:
 			self.gripper_open()
 		# servo above pose
-		self._approach(pose)
+		self.approach(pose)
 		# servo to pose
-		self._servo_to_pose(pose)
+		self.gripper_to_pose(pose)
 		# close gripper
-		if not self._suction:
+		if not self.is_suction:
 			self.gripper_close()
 		else:
 			self.suction_on()
 		# retract to clear object
-		self._retract()
+		self.retract()
 
 	def place(self, pose):
 		# servo above pose
-		self._approach(pose)
+		self.approach(pose)
 		# servo to pose
-		self._servo_to_pose(pose)
+		self.gripper_to_pose(pose)
 		#open the gripper
-		if not self._suction:
+		if not self.is_suction:
 			self.gripper_open()
 		# retract to clear object
-		self._retract()
+		self.retract()

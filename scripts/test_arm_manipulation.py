@@ -20,7 +20,7 @@ from tcb.perception.kinect_rgbd import KinectRGBD
 from tcb.perception.trash_frame import TrashFrame
 from tcb.perception.trash import Trash
 
-from tcb.manipulation.arm_manipulation import PickAndPlace
+from tcb.manipulation.arm_manipulation import BaxterArm
 import time
 
 def draw_rectangle_and_save(c_img, d_img, bbox):
@@ -34,13 +34,13 @@ def main():
 	limb = 'left'
 	hover_distance = 0.15 # meters
 
-	pnp = PickAndPlace(limb, hover_distance, suction=False)
+	arm = BaxterArm(limb, hover_distance, suction=False)
 	# an orientation for gripper fingers to be overhead and parallel to the obj
 	overhead_orientation = Quaternion(x=-0.0249590815779,
 										y=0.999649402929,
 										z=0.00737916180073,
 										w=0.00486450832011)
-	pnp.move_to_start()
+	arm.move_to_start()
 
 	rgbd_cam = KinectRGBD()
 	cam_info = rgbd_cam.get_cam_info()
@@ -83,7 +83,7 @@ def main():
 	# 	position = Point(x=0.7, y=0.15, z=-0.129),
 	# 	orientation = overhead_orientation))
 	# move to the desired starting angles
-	pnp.move_to_start()
+	arm.move_to_start()
 	idx = 0
 
 	pose1 = Pose(
@@ -96,13 +96,13 @@ def main():
 
 	while not rospy.is_shutdown():
 		# print("\nPicking...")
-		# pnp.pick(obj_poses[idx])
+		# arm.pick(obj_poses[idx])
 		# print("\nPlacing...")
 		# idx = (idx+1)%len(obj_poses)
-		# pnp.place(obj_poses[idx])
+		# arm.place(obj_poses[idx])
 		print("sweeping")
-		pnp.pick(pose1)
-		pnp.move_to_start()
+		arm.pick(pose1)
+		arm.move_to_start()
 
 	return 0
 

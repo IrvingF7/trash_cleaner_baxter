@@ -20,7 +20,7 @@ from tcb.perception.kinect_rgbd import KinectRGBD
 from tcb.perception.trash_frame import TrashFrame
 from tcb.perception.trash import Trash
 
-from tcb.manipulation.arm_manipulation import PickAndPlace
+from tcb.manipulation.arm_manipulation import BaxterArm
 import time
 
 def main():
@@ -28,7 +28,7 @@ def main():
 	limb = 'right'
 	hover_distance = 0.15
 
-	pnp = PickAndPlace(limb, hover_distance, suction=True)
+	arm = BaxterArm(limb, hover_distance, suction=True)
 	IPython.embed()
 
 if __name__ == "__main__":
