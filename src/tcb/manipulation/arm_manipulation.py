@@ -30,6 +30,8 @@ class BaxterArm(object):
 		self._verbose = verbose # bool (print debug statements)
 		self._limb = baxter_interface.Limb(limb)
 		self._gripper = baxter_interface.Gripper(limb)
+		if self.is_suction:
+			self._gripper.set_vacuum_threshold(self, 0.2)
 		# service name nx
 		nx = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
 		# An object for the service call initialized by passing service name nx
@@ -54,13 +56,13 @@ class BaxterArm(object):
 		# 	start_angles = dict(zip(self._joint_names, [0]*7))
 
 		if self._limb_name == "left":
-			start_angles = {'left_w0': 0.6699952259595108,
-							'left_w1': 1.030009435085784,
-							'left_w2': -0.4999997247485215,
-							'left_e0': -1.189968899785275,
-							'left_e1': 1.9400238130755056,
-							'left_s0': -0.08000397926829805,
-							'left_s1': -0.9999781166910306}
+			start_angles = {'left_w0': 0.2396844981070959,
+							'left_w1': 1.2904613378086043,
+							'left_w2': 2.7929955195423672,
+							'left_e0': -0.7090826192000325,
+							'left_e1': 1.5899710866432313,
+							'left_s0': -0.35204859081970247,
+							'left_s1': -1.2252671543234743}
 		else:
 			start_angles = {'right_s0': -0.395, 
 							'right_s1': -0.202, 
@@ -132,16 +134,16 @@ class BaxterArm(object):
 		except:
 			rospy.logerr("not a parallel jaw gripper")
 
-	def suction_on(self, suction_time=5.0):
+	def suction_on(self, suction_time):
 		try:
-			self._gripper.command_suction(timeout=suction_time)
+			self._gripper.close(5.0)
 			rospy.sleep(1.0)
 		except:
 			rospy.logerr("not a suction gripper")
 
 	def suction_off(self):
 		try:
-			self._gripper.set_blow_off(2.0)
+			self._gripper.open()
 			rospy.sleep(1.0)
 		except:
 			rospy.logerr("not a suction gripper")

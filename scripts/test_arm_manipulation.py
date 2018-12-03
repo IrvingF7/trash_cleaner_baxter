@@ -21,7 +21,7 @@ from tcb.perception.trash_frame import TrashFrame
 from tcb.perception.trash import Trash
 
 from tcb.manipulation.arm_manipulation import BaxterArm
-from tcb.manipulation.tools import Tool, Broom, Dustpan, Sticky
+from tcb.manipulation.tool import Tool, Broom, DustPan, Sticky
 import time
 
 def draw_rectangle_and_save(c_img, d_img, bbox):
@@ -44,7 +44,7 @@ def main():
 	c_img = rgbd_cam.get_c_img()
 	d_img = rgbd_cam.get_d_img()
 
-	bbox = [220, 320, 260, 350]
+	bbox = [230, 330, 320, 390]
 
 	draw_rectangle_and_save(c_img, d_img, bbox)
 
@@ -56,16 +56,16 @@ def main():
 	trash_frame = TrashFrame(rgbd_cam)
 	wt = trash_frame.generate_world2trash(trash_point)
 
-	broom = Broom()
-	dustpan = DustPan()
+	broom = Broom(left_arm)
+	dustpan = DustPan(right_arm)
 
 	broom.pick()
-	dustpan.pick()
 
-	dustpan.place_plan()
+	dustpan.pick()
 	broom.sweep(wt)
-	
+
 	broom.return_to_start()
+	dustpan.return_to_start()
 
 if __name__ == '__main__':
 	sys.exit(main())

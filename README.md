@@ -8,22 +8,26 @@ Use Python 2.7.10
 git clone https://github.com/GrantMeAWish/trash_cleaner_baxter.git
 ```
 
-### Virtual Environment Setup
-Before installing dependencies, we strongly recommend that you setup a virtual environment. This makes sure that your dependencies are fully compatible with the python version we recommend (2.7).
+### Setup to run demo
+Navigate to ros workspace and connect to baxter
 ```
-virtualenv -p python2 trash_env
-cd trash_env
-source bin/activate
+./baxter.sh asimov.local
 ```
 
-### Installing Dependencies
-To install dependencies, we recommend cloning into the repo and installing the libraries using pip
+Launch freenect and configure depth registration
 ```
-pip install -r requirements.txt
+roslaunch freenect_launch freenect.launch
+
+rosrun rqt_reconfigure rqt_reconfigure
+
+rosrun image_view image_view image:=/camera/rgb/image_color
 ```
 
-### Installing Packages for Development
-To install the packages, run the following script. Since this project is still in development, DO NOT run python setup.py install. Run this instead so that you can add scripts to the packages and have changes reflected in the packages.
+Launch kinect static transform and AR tag tracking. Use rviz to view frames and robot state.
 ```
-python setup.py develop
+roslaunch trash_cleaner_baxter kinect_static_tf.launch
+
+roslaunch ar_track_alvar kinect_ar.launch
+
+rosrun rviz rviz
 ```

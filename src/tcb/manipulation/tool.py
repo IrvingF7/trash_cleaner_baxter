@@ -6,13 +6,15 @@ from geometry_msgs.msg import (
 	PoseStamped,
 	Pose,
 	Quaternion,
+	Point,
 )
 
-from tcb.manipulation.arm_manipulation import PickAndPlace
+from tcb.manipulation.arm_manipulation import BaxterArm
+import abc
 
 class Tool(object):
 
-	def __init__(self):
+	def __init__(self, baxter_arm):
 		self._ar_frame = '/ar_marker_0'
 		self._world_frame = '/base'
 
@@ -41,7 +43,7 @@ class Tool(object):
 		tool_trans = ar_trans + self._tool_offset
 
 		tool_rot = tf.transformations.quaternion_from_euler(self._gripper_rot[0], self._gripper_rot[1], 
-															self._gripper_rot[1])
+															self._gripper_rot[2])
 		tool_rot = Quaternion(x=tool_rot[0], y=tool_rot[1], z=tool_rot[2], w=tool_rot[3])
 
 		tool_pose = Pose(position=Point(x=tool_trans[0], y=tool_trans[1], z=tool_trans[2]),
@@ -49,7 +51,7 @@ class Tool(object):
 
 		return tool_pose
 
-	def pick(self, suction_time=0.0):
+	def pick(self, suction_time=5.0):
 		if not self.arm.is_suction:
 			self.arm.gripper_open()
 
@@ -61,8 +63,9 @@ class Tool(object):
 			self.arm.gripper_close()
 		else:
 			self.arm.suction_on(suction_time)
+			rsopy.sleep(1.0)
 
-	@abstractmethod
+	@abc.abstractmethod
 	def return_to_start(self):
 		"""return tool to its starting location"""
 
@@ -71,21 +74,29 @@ class Broom(Tool):
 
 	def __init__(self, baxter_arm):
 		self._ar_frame = '/ar_marker_5'
+		self._world_frame = '/base'
 		
-		self._tool_offset = np.array([0.05, 0, 0])
-		self._gripper_rot = (-np.pi, 0, -np.pi / 2)
+		self._tool_offset = np.array([0.09, 0, -0.03])
+		self._gripper_rot = (-np.pi, 0, np.pi / 2)
+
+		self._listener = tf.TransformListener()
+		self.pose = self._compute_pose()
+
+		self.arm = baxter_arm
 		
 	def sweep(self, trash_frame):
 		trash_trans = trash_frame[0]
-		x, y, z = trash_trans[0], trash_trans[1], trash_trans[2]
-		start_y = y + 0.15
-		end_y = y - 0.15
+		x, y = trash_trans[0], trash_trans[1]
+		z = self.pose.position.z + 0.008
+		start_y = y
+		# end_y = y - 0.18
+		end_y = y - 0.12
 
 		start_pose = Pose(position=Point(x=x, y=start_y, z=z), 
-							orientation=self._gripper_rot)
+							orientation=self.pose.orientation)
 
 		end_pose = Pose(position=Point(x=x, y=end_y, z=z), 
-						orientation=self._gripper_rot)
+						orientation=self.pose.orientation)
 
 		self.arm.gripper_to_pose(start_pose)
 		rospy.sleep(1.0)
@@ -93,17 +104,25 @@ class Broom(Tool):
 		self.arm.retract()
 
 	def return_to_start(self):
+		self.arm.approach(self.pose)
 		self.arm.gripper_to_pose(self.pose)
 		self.arm.gripper_open()
+		self.arm.retract()
 		self.arm.move_to_start()
 
 class DustPan(Tool):
 
-	def __init__(self):
+	def __init__(self, baxter_arm):
 		self._ar_frame = '/ar_marker_4'
+		self._world_frame = '/base'
 		
-		self._tool_offset = np.array([0.05, 0, 0])
-		self._gripper_rot = (-np.pi, 0, -np.pi / 2)
+		self._tool_offset = np.array([0.03, 0, -0.03])
+		self._gripper_rot = (-np.pi, 0, 0)
+
+		self._listener = tf.TransformListener()
+		self.pose = self._compute_pose()
+
+		self.arm = baxter_arm
 
 	def place_pan(self, trash_frame):
 		trash_trans = trash_frame[0]
@@ -112,13 +131,13 @@ class DustPan(Tool):
 		set_z = z + 0.2
 
 		set_pose = Pose(position=Point(x=x, y=set_y, z=z), 
-						orientation=self._gripper_rot)
+						orientation=self.pose.orientation)
 
 		self.arm.gripper_to_pose(set_pose)
 
 	def return_to_start(self):
-		self.arm.suction_on()
-		self.arm.gripper_to_pose(self.pose)
+		self.arm.suction_off()
+		self.arm.retract()
 		self.arm.move_to_start()
 
 class Sticky(Tool):
