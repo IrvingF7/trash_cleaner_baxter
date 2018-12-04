@@ -21,6 +21,7 @@ from tcb.perception.trash_frame import TrashFrame
 from tcb.perception.trash import Trash
 
 from tcb.manipulation.arm_manipulation import BaxterArm
+from tcb.manipulation.deposit_bin import DepositBin
 from tcb.manipulation.tool import Tool, Broom, DustPan, Sticky
 import time
 
@@ -44,7 +45,7 @@ def main():
 	c_img = rgbd_cam.get_c_img()
 	d_img = rgbd_cam.get_d_img()
 
-	bbox = [230, 330, 320, 390]
+	bbox = [180, 290, 300, 440]
 
 	draw_rectangle_and_save(c_img, d_img, bbox)
 
@@ -59,14 +60,14 @@ def main():
 
 	broom = Broom(left_arm)
 	dustpan = DustPan(right_arm)
-	deposit_bin = DepositBin(6, True)
+	# deposit_bin = DepositBin(6, True)
+	label = 0
 
 	if label == 0:
 		broom.pick()
 
 		dustpan.pick()
-		broom.sweep(wt)
-
+		broom.sweep(wt, num_times=2)
 		broom.return_to_start()
 		dustpan.return_to_start()
 	else:

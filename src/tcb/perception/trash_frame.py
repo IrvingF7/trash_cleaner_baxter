@@ -6,6 +6,13 @@ from image_geometry import PinholeCameraModel
 import thread
 import numpy as np
 
+from geometry_msgs.msg import (
+	PoseStamped,
+	Pose,
+	Quaternion,
+	Point,
+)
+
 class TrashFrame(object):
 
 	def __init__(self, cam):

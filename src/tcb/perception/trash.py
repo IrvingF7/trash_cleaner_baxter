@@ -11,7 +11,7 @@ def find_trash(model_output, confid_thresh, c_img, d_img):
 
 	for i in range(valid_indxs):
 		points = bboxes[i]
-		points = _scale_bbox2img(self, points, c_img)
+		points = _scale_bbox2img(points, c_img)
 		label_num = classes[i]
 
 		trash = Trash(points, label_num, c_img, d_img)
@@ -19,13 +19,13 @@ def find_trash(model_output, confid_thresh, c_img, d_img):
 
 	return valid_trash
 
-def _scale_bbox2img(self, points, c_img):
+def _scale_bbox2img(points, c_img):
 	height, width, dim = c_img.shape
 
-	x_min = points[0] * width
-	y_min = points[1] * height
-	x_max = points[2] * width
-	y_max = points[3] * height
+	x_min = int(points[0] * width)
+	y_min = int(points[1] * height)
+	x_max = int(points[2] * width)
+	y_max = int(points[3] * height)
 
 	return [x_min, y_min, x_max, y_max]
 
@@ -39,8 +39,8 @@ class Trash(object):
 
 		self.points = dict()
 		self.points['x_min'] = points[0]
-		self.points['x_max'] = points[2]
 		self.points['y_min'] = points[1]
+		self.points['x_max'] = points[2]
 		self.points['y_max'] = points[3]
 
 		self.cg = self._find_cg()
