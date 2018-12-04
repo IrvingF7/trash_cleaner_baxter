@@ -55,17 +55,27 @@ def main():
 
 	trash_frame = TrashFrame(rgbd_cam)
 	wt = trash_frame.generate_world2trash(trash_point)
+	trash_pose = trash_frame.frame2pose(wt)
 
 	broom = Broom(left_arm)
 	dustpan = DustPan(right_arm)
+	deposit_bin = DepositBin(6, True)
 
-	broom.pick()
+	if label == 0:
+		broom.pick()
 
-	dustpan.pick()
-	broom.sweep(wt)
+		dustpan.pick()
+		broom.sweep(wt)
 
-	broom.return_to_start()
-	dustpan.return_to_start()
+		broom.return_to_start()
+		dustpan.return_to_start()
+	else:
+		deposit_pose = deposit_bin.get_pose()
+		right_arm.approach(trash_pose)
+		right_arm.gripper_to_pose(trash_pose)
+		right_arm.approach(deposit_pose)
+		right_arm.suction_off()
+		right_arm.move_to_start()
 
 if __name__ == '__main__':
 	sys.exit(main())

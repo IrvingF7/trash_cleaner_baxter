@@ -88,3 +88,15 @@ class TrashFrame(object):
 		wt_rot = tf.transformations.quaternion_from_matrix(g_wt)
 
 		return wt_trans, wt_rot
+
+	def frame2pose(self, frame, gripper_rot=(-np.pi, 0, 0)):
+		trans = frame[0]
+		rot = gripper_rot
+
+		quat = tf.transformations.quaternion_from_euler(rot[0], rot[1], rot[2])
+		quat = Quaternion(x=quat[0], y=quat[1], z=quat[2], w=quat[3])
+
+		pose = Pose(position=Point(x=trans[0], y=trans[1], z=trans[2]),
+					orientation=quat)
+
+		return pose
