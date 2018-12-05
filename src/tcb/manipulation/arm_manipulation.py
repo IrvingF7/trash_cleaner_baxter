@@ -45,8 +45,8 @@ class BaxterArm(object):
 		self._init_state = self._rs.state().enabled
 		print("Enabling robot...")
 		self._rs.enable()
-		# if not suction:
-		self._gripper.calibrate()
+		if not suction:
+			self._gripper.calibrate()
 
 	# move arm to a desired initial pose, if none supplied, 0 angle for every joint
 	def move_to_start(self):

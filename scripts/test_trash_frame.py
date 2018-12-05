@@ -23,11 +23,11 @@ import cv2
 sys.path.append('~/models/research')
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
-from tcb.obj_detection.obj_detector import ObjDetector
+from tcb.obj_detection.object_detector import ObjectDetector
 
-def draw_bbox_and_save(c_img, bbox):
+def draw_bbox(c_img, bbox):
 	cv2.rectangle(c_img,(bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 3)
-	cv2.imwrite('debug_imgs/c_img_bbox.png', c_img)
+	
 
 def test():
 	rospy.init_node("trash_frame_demo")
@@ -36,15 +36,16 @@ def test():
 	c_img = rgbd_cam.get_c_img()
 	d_img = rgbd_cam.get_d_img()
 
-	# bbox = [200, 300, 240, 320]
-
-	# cv2.rectangle(c_img,(bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 3)
 	c_img_path = 'debug_imgs/c_img.png'
 	cv2.imwrite(c_img_path, c_img)
 	cv2.imwrite('debug_imgs/d_img.png', d_img)
+	# c_img = cv2.imread(c_img_path)
+	# d_img = cv2.imread('debug_imgs/d_img.png')  
 
-	obj_det = ObjDetector('model/inference_graph.pb', 'model/labelmap.pbtxt')
-	output_dict, image_np = obj_det.predict(c_img_path)
+	obj_det = ObjectDetector()
+	boxes, scores, classes, num = obj_det.detect(c_img_path)
+	output_dict = {'detection_boxes': np.squeeze(boxes), 'detection_scores' : np.squeeze(scores), 
+					'detection_classes' : np.squeeze(classes).astype(np.int32), 'detection_num' : np.squeeze(num)}
 	valid_trash = find_trash(output_dict, 0.8, c_img, d_img)
 
 	bboxes = []
@@ -52,7 +53,8 @@ def test():
 		bbox = [trash.points['x_min'], trash.points['y_min'], trash.points['x_max'], trash.points['y_max']]
 		print(trash.label_num)
 		bboxes.append(bbox)
-		draw_bbox_and_save(c_img, bbox)
+		draw_bbox(c_img, bbox)
+		cv2.imwrite('debug_imgs/c_img_bbox.png', c_img)
 
 	# cg = trash.get_cg()
 	# depth = trash.get_depth()

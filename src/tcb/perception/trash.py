@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import IPython
 
 def find_trash(model_output, confid_thresh, c_img, d_img):
 	bboxes = model_output['detection_boxes']
@@ -13,19 +14,19 @@ def find_trash(model_output, confid_thresh, c_img, d_img):
 		points = bboxes[i]
 		points = _scale_bbox2img(points, c_img)
 		label_num = classes[i]
-
-		trash = Trash(points, label_num, c_img, d_img)
-		valid_trash.append(trash)
+		if label_num == 1:
+			trash = Trash(points, label_num, c_img, d_img)
+			valid_trash.append(trash)
 
 	return valid_trash
 
 def _scale_bbox2img(points, c_img):
 	height, width, dim = c_img.shape
 
-	x_min = int(points[0] * width)
-	y_min = int(points[1] * height)
-	x_max = int(points[2] * width)
-	y_max = int(points[3] * height)
+	x_min = int(points[1] * width)
+	y_min = int(points[0] * height)
+	x_max = int(points[3] * width)
+	y_max = int(points[2] * height)
 
 	return [x_min, y_min, x_max, y_max]
 
