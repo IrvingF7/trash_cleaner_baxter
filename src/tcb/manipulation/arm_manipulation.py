@@ -31,7 +31,7 @@ class BaxterArm(object):
 		self._limb = baxter_interface.Limb(limb)
 		self._gripper = baxter_interface.Gripper(limb)
 		if self.is_suction:
-			self._gripper.set_vacuum_threshold(self, 0.2)
+			self._gripper.set_vacuum_threshold(self, 400)
 		# service name nx
 		nx = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
 		# An object for the service call initialized by passing service name nx

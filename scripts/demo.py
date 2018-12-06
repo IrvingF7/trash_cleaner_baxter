@@ -83,9 +83,11 @@ def main():
 		wt = trash_frame.generate_world2trash(trash_point)
 		trash_pose = trash_frame.frame2pose(wt)
 
+		rospy.sleep(2)
 		broom = Broom(left_arm)
 		dustpan = DustPan(right_arm)
-		# deposit_bin = DepositBin(6, True)
+		sticky = Sticky(left_arm)
+		deposit_bin = DepositBin(3, True)
 
 		if trash.label_num == 1:
 			broom.pick()
@@ -95,12 +97,13 @@ def main():
 			dustpan.return_to_start()
 		elif trash.label_num == 2 or trash.label_num == 3:
 			deposit_pose = deposit_bin.get_pose()
-			right_arm.approach(trash_pose)
-			right_arm.gripper_to_pose(trash_pose)
-			right_arm.suction_on()
-			right_arm.gripper_to_pose(deposit_pose)
-			right_arm.suction_off()
-			right_arm.move_to_start()
+			sticky.pick()
+			left_arm.retract()
+			left_arm.gripper_to_pose(trash_pose)
+			left_arm.retract()
+			left_arm.gripper_to_pose(deposit_pose)
+			left_arm.suction_off()
+			left_arm.move_to_start()
 
 		IPython.embed()
 

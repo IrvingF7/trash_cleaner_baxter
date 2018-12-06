@@ -51,7 +51,7 @@ class Tool(object):
 
 		return tool_pose
 
-	def pick(self, suction_time=5.0):
+	def pick(self, suction_time=50):
 		if not self.arm.is_suction:
 			self.arm.gripper_open()
 
@@ -76,7 +76,7 @@ class Broom(Tool):
 		self._ar_frame = '/ar_marker_3'
 		self._world_frame = '/base'
 		
-		self._tool_offset = np.array([0.05, 0.17, -0.03])
+		self._tool_offset = np.array([0.06, 0.17, -0.03])
 		self._gripper_rot = (-np.pi, 0, np.pi / 2)
 
 		self._listener = tf.TransformListener()
@@ -108,7 +108,7 @@ class Broom(Tool):
 	def return_to_start(self):
 		old_pose_pos = self.pose.position
 		old_pose_rot = self.pose.orientation
-		new_start_point = Point(x=old_pose_pos.x, y=old_pose_pos.y - 0.04, z=old_pose_pos.z)
+		new_start_point = Point(x=old_pose_pos.x + 0.06, y=old_pose_pos.y - 0.1, z=old_pose_pos.z)
 		new_start_rot = old_pose_rot
 		new_start_pose = Pose(position=new_start_point, orientation=new_start_rot)
 		self.arm.approach(new_start_pose)
@@ -124,9 +124,9 @@ class DustPan(Tool):
 		self._world_frame = '/base'
 		
 		# large gripper
-		# self._tool_offset = np.array([0.04, -0.08, -0.02])
+		self._tool_offset = np.array([0.04, -0.1, -0.01])
 		# small gripper
-		self._tool_offset = np.array([0.04, -0.1, -0.035])
+		# self._tool_offset = np.array([0.04, -0.1, -0.035])
 		self._gripper_rot = (-np.pi, 0, 0)
 
 		self._listener = tf.TransformListener()
@@ -152,10 +152,22 @@ class DustPan(Tool):
 
 class Sticky(Tool):
 
-	def __init__(self):
-		self._ar_frame = '/ar_marker_6'
+	def __init__(self, baxter_arm):
+		self._ar_frame = '/ar_marker_5'
+		self._world_frame = '/base'
 		
-		self._tool_offset = np.array(0.05, 0, 0)
-		self._gripper_rot = (-np.pi, 0, -np.pi / 2)
+		# large gripper
+		self._tool_offset = np.array([0.02, 0.1, -0.06])
+		# small gripper
+		# self._tool_offset = np.array([0.04, -0.1, -0.035])
+		self._gripper_rot = (-np.pi, 0, np.pi / 2)
 
+		self._listener = tf.TransformListener()
+		self.pose = self._compute_pose()
+
+		self.arm = baxter_arm
 	
+	def return_to_start(self):
+		self.arm.gripper_open()
+		self.arm.retract()
+		self.arm.move_to_start()

@@ -19,9 +19,9 @@ class DepositBin(object):
 
 		if not suction_drop:
 			self._deposit_offset = np.array([0.09, 0, -0.03])
-			self._grippe_rot = (-np.pi, 0, np.pi / 2)
+			self._gripper_rot = (-np.pi, 0, np.pi / 2)
 		else:
-			self._deposit_offset = np.array([0.03, 0, -0.03])
+			self._deposit_offset = np.array([0, 0.2, 0.1])
 			self._gripper_rot = (-np.pi, 0, 0)
 
 		self._listener = tf.TransformListener()
@@ -34,7 +34,7 @@ class DepositBin(object):
 		found_tf = False
 		while not found_tf:
 			try:
-				ar_trans, ar_rot = self._listener.lookupTransform(self._world_frame, 
+				ar_trans, ar_rot = self._listener.lookupTransform('/base', 
 																	self._ar_frame, 
 																	rospy.Time(0))
 				found_tf = True
