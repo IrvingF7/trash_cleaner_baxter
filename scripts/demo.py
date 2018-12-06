@@ -97,7 +97,8 @@ def main():
 			deposit_pose = deposit_bin.get_pose()
 			right_arm.approach(trash_pose)
 			right_arm.gripper_to_pose(trash_pose)
-			right_arm.approach(deposit_pose)
+			right_arm.suction_on()
+			right_arm.gripper_to_pose(deposit_pose)
 			right_arm.suction_off()
 			right_arm.move_to_start()
 

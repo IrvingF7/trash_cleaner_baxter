@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import IPython
 
+valid_labels = [1, 2, 3]
+
 def find_trash(model_output, confid_thresh, c_img, d_img):
 	bboxes = model_output['detection_boxes']
 	classes = model_output['detection_classes']
@@ -14,7 +16,7 @@ def find_trash(model_output, confid_thresh, c_img, d_img):
 		points = bboxes[i]
 		points = _scale_bbox2img(points, c_img)
 		label_num = classes[i]
-		if label_num == 1:
+		if label_num in valid_labels and points[3] > 200:
 			trash = Trash(points, label_num, c_img, d_img)
 			valid_trash.append(trash)
 
