@@ -76,7 +76,7 @@ class Broom(Tool):
 		self._ar_frame = '/ar_marker_3'
 		self._world_frame = '/base'
 		
-		self._tool_offset = np.array([0.06, 0.17, -0.03])
+		self._tool_offset = np.array([0.065, 0.17, -0.03])
 		self._gripper_rot = (-np.pi, 0, np.pi / 2)
 
 		self._listener = tf.TransformListener()
@@ -90,7 +90,7 @@ class Broom(Tool):
 		start_z = self.pose.position.z + 0.01
 		end_z = self.pose.position.z + 0.02
 		start_y = y + 0.20
-		end_y = y - 0.18
+		end_y = y - 0.16
 
 		start_pose = Pose(position=Point(x=x, y=start_y, z=start_z), 
 							orientation=self.pose.orientation)
@@ -124,7 +124,7 @@ class DustPan(Tool):
 		self._world_frame = '/base'
 		
 		# large gripper
-		self._tool_offset = np.array([0.04, -0.1, -0.01])
+		self._tool_offset = np.array([0.04, -0.1, -0.015])
 		# small gripper
 		# self._tool_offset = np.array([0.04, -0.1, -0.035])
 		self._gripper_rot = (-np.pi, 0, 0)

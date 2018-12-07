@@ -103,7 +103,7 @@ class TrashFrame(object):
 		quat = tf.transformations.quaternion_from_euler(rot[0], rot[1], rot[2])
 		quat = Quaternion(x=quat[0], y=quat[1], z=quat[2], w=quat[3])
 
-		pose = Pose(position=Point(x=trans[0], y=trans[1], z=trans[2]),
+		pose = Pose(position=Point(x=trans[0] + 0.05, y=trans[1]-0.03, z=trans[2]),
 					orientation=quat)
 
 		return pose

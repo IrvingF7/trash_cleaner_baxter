@@ -21,7 +21,7 @@ class DepositBin(object):
 			self._deposit_offset = np.array([0.09, 0, -0.03])
 			self._gripper_rot = (-np.pi, 0, np.pi / 2)
 		else:
-			self._deposit_offset = np.array([0, 0.2, 0.1])
+			self._deposit_offset = np.array([0, 0.1, 0.1])
 			self._gripper_rot = (-np.pi, 0, 0)
 
 		self._listener = tf.TransformListener()

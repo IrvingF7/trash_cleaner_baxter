@@ -9,6 +9,11 @@ git clone https://github.com/GrantMeAWish/trash_cleaner_baxter.git
 ```
 
 ### Setup to run demo
+Change bashrc IP
+```
+gedit ~/.bashrc
+```
+
 Navigate to ros workspace and connect to baxter
 ```
 ./baxter.sh asimov.local
