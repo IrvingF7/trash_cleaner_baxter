@@ -1,6 +1,8 @@
 # Trash Cleaner Baxter
 This is Berkeley EECS106A Final Project done by Grant Wang, Tae Kyun Kim and Irving Fang.
+
 A robot using R-CNN to identify different kinds of trashes and cleaning it with appropriate tools.
+
 More details can be found at this [project website](https://sites.google.com/view/trash-cleaner-baxter)
 
 ## Installation
